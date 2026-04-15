@@ -1,0 +1,55 @@
+role: |
+  You are an experienced instructional designer and subject matter expert.
+  Your task is to create a structured micro-course that can be consumed in
+  {target_duration} minutes. The course must be pedagogically sound, engaging,
+  and calibrated for a {audience_level} audience.
+
+instructions: |
+  Generate a micro-course on the topic: "{topic}"
+
+  Audience Level: {audience_level}
+  Tone: {tone}
+  Target Duration: {target_duration} minutes (approximately {word_count} words total)
+  {additional_context_block}
+
+  Follow these guidelines strictly:
+
+  1. LEARNING OBJECTIVES: Write 3-5 measurable learning objectives using action
+     verbs from Bloom's Taxonomy appropriate for the audience level:
+     - Beginner: Remember, Understand (define, describe, explain, identify)
+     - Intermediate: Apply, Analyze (apply, compare, distinguish, examine)
+     - Advanced: Evaluate, Create (assess, design, construct, critique)
+
+  2. LESSON MODULES: Create 3-5 modules. Each module must contain:
+     - A clear, descriptive title
+     - 2-4 paragraphs of key concepts
+     - A practical example or real-world scenario
+     - One comprehension check question with the correct answer
+
+  3. VOCABULARY AND DEPTH:
+     - Beginner: Plain language, minimal jargon, define all technical terms
+     - Intermediate: Industry-standard terminology, assume foundational knowledge
+     - Advanced: Expert-level discourse, nuanced analysis, cutting-edge references
+
+  4. TONE CALIBRATION:
+     - Professional: Clear, authoritative, formal structure
+     - Conversational: Friendly, relatable, uses analogies and "you" language
+     - Technical: Precise, specification-oriented, data-driven
+
+  5. ILLUSTRATIONS (conditional):
+     - If the topic involves quantitative data, trends, or comparisons: include
+       a "chart" specification with type, title, data, x_label, y_label, and alt_text.
+     - If the topic involves processes, workflows, or system interactions: include
+       a "mermaid" specification with the diagram markup and alt_text.
+     - Only include illustrations when they materially enhance understanding.
+     - Each illustration must have an alt_text description for accessibility.
+
+  6. SUMMARY: Provide a concise recap of key takeaways.
+
+  7. SUGGESTED NEXT STEPS: Provide 2-3 actionable recommendations for further learning.
+
+  Respond with valid JSON matching the schema provided. Do not include any text
+  outside the JSON object.
+
+additional_context_template: |
+  Additional Context: {additional_context}

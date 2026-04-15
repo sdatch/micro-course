@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["course_title", "learning_objectives", "modules", "summary", "next_steps"],
+  "properties": {
+    "course_title": {
+      "type": "string",
+      "description": "A concise, descriptive title for the micro-course"
+    },
+    "learning_objectives": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 3,
+      "maxItems": 5,
+      "description": "Measurable learning objectives aligned with Bloom's Taxonomy"
+    },
+    "modules": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["title", "content", "example", "comprehension_check"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Module title"
+          },
+          "content": {
+            "type": "string",
+            "description": "2-4 paragraphs of key concepts in markdown format"
+          },
+          "example": {
+            "type": "string",
+            "description": "A practical example or real-world scenario"
+          },
+          "comprehension_check": {
+            "type": "object",
+            "required": ["question", "answer"],
+            "properties": {
+              "question": { "type": "string" },
+              "answer": { "type": "string" }
+            }
+          },
+          "illustration": {
+            "type": "object",
+            "description": "Optional visual aid for the module",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["chart", "mermaid"]
+              },
+              "chart": {
+                "type": "object",
+                "properties": {
+                  "chart_type": {
+                    "type": "string",
+                    "enum": ["bar", "line", "pie", "scatter", "histogram"]
+                  },
+                  "title": { "type": "string" },
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "labels": { "type": "array", "items": { "type": "string" } },
+                      "values": { "type": "array", "items": { "type": "number" } }
+                    },
+                    "required": ["labels", "values"]
+                  },
+                  "x_label": { "type": "string" },
+                  "y_label": { "type": "string" }
+                }
+              },
+              "mermaid": {
+                "type": "object",
+                "properties": {
+                  "markup": { "type": "string" }
+                }
+              },
+              "alt_text": { "type": "string" }
+            },
+            "required": ["type", "alt_text"]
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "string",
+      "description": "Key takeaways recap"
+    },
+    "next_steps": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 2,
+      "maxItems": 3,
+      "description": "Recommendations for further learning"
+    }
+  }
+}
