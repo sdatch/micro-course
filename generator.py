@@ -6,6 +6,8 @@ from pathlib import Path
 import yaml
 import anthropic
 
+from optimizer import generate_optimization_hints
+
 
 PROMPTS_DIR = Path(__file__).parent / "prompts"
 WORDS_PER_MINUTE = 150
@@ -48,6 +50,13 @@ def build_prompt(
         target_duration=target_duration,
         audience_level=audience_level,
     )
+
+    # Append feedback-driven optimization hints
+    optimization_hints = generate_optimization_hints(
+        topic=topic, audience_level=audience_level
+    )
+    if optimization_hints:
+        system_prompt += "\n\n" + optimization_hints
 
     user_prompt = template["instructions"].format(
         topic=topic,

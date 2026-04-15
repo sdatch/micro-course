@@ -7,6 +7,8 @@ import streamlit as st
 from generator import generate_course
 from validators import validate_course
 from export import course_to_markdown
+from feedback import save_feedback, aggregate_feedback, load_all_feedback
+from optimizer import get_active_rules
 
 # ---------- Page config ----------
 st.set_page_config(
@@ -203,3 +205,92 @@ if course:
             file_name=f"{safe_title}.json",
             mime="application/json",
         )
+
+    # ---------- Feedback form ----------
+    st.divider()
+    st.subheader("Course Feedback")
+    st.caption("Help us improve future courses by sharing your experience.")
+
+    feedback_key = f"feedback_{course['course_title']}"
+    if feedback_key in st.session_state:
+        st.success("Thank you for your feedback!")
+    else:
+        with st.form("feedback_form"):
+            overall_rating = st.slider(
+                "Overall Rating", min_value=1, max_value=5, value=4
+            )
+
+            difficulty = st.radio(
+                "Difficulty Calibration",
+                ["Too easy", "Just right", "Too advanced"],
+                index=1,
+                horizontal=True,
+            )
+
+            # Per-module thumbs up/down
+            st.markdown("**Module Usefulness**")
+            module_ratings = {}
+            for mod in course["modules"]:
+                module_ratings[mod["title"]] = st.checkbox(
+                    f"Thumbs up: {mod['title']}", value=True,
+                    key=f"mod_{mod['title']}",
+                )
+
+            # Illustration helpfulness (only if illustrations exist)
+            illustration_ratings = {}
+            modules_with_illustrations = [
+                m for m in course["modules"] if m.get("illustration")
+            ]
+            if modules_with_illustrations:
+                st.markdown("**Illustration Helpfulness**")
+                for mod in modules_with_illustrations:
+                    illustration_ratings[mod["title"]] = st.checkbox(
+                        f"Helpful: {mod['title']} illustration", value=True,
+                        key=f"ill_{mod['title']}",
+                    )
+
+            comments = st.text_area(
+                "Comments (optional)",
+                placeholder="What was most or least helpful?",
+            )
+
+            feedback_submitted = st.form_submit_button("Submit Feedback")
+
+        if feedback_submitted:
+            feedback_data = {
+                "topic": course.get("course_title", ""),
+                "audience_level": course.get("audience_level", ""),
+                "course_title": course["course_title"],
+                "overall_rating": overall_rating,
+                "difficulty": difficulty,
+                "module_ratings": module_ratings,
+                "illustration_ratings": illustration_ratings,
+                "comments": comments,
+            }
+            save_feedback(feedback_data)
+            st.session_state[feedback_key] = True
+            st.rerun()
+
+# ---------- Optimization Dashboard (sidebar) ----------
+with st.sidebar:
+    st.divider()
+    st.header("Improvement Loop")
+    all_feedback = load_all_feedback()
+    if all_feedback:
+        agg = aggregate_feedback(all_feedback)
+        st.metric("Total Feedback", agg["total_count"])
+        st.metric("Avg Rating", f"{agg['global_avg_rating']}/5")
+
+        if agg["difficulty_distribution"]:
+            st.caption("Difficulty Distribution")
+            diff_items = agg["difficulty_distribution"]
+            for label, count in diff_items.items():
+                st.text(f"  {label}: {count}")
+
+        rules = get_active_rules()
+        if rules:
+            st.caption("Active Optimization Rules")
+            for rule in rules:
+                st.text(f"[{rule['level']}] {rule['description'][:60]}")
+    else:
+        st.info("No feedback yet. Generate and review a course to start the improvement loop.")
